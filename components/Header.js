@@ -1,10 +1,12 @@
 import Image from "next/image";
 import instagram from "../public/instagram.png";
-import { SearchIcon } from "@heroicons/react/outline";
+import nyan from "../public/nyan-image.png";
+import { SearchIcon, PlusCircleIcon } from "@heroicons/react/outline";
+import { HomeIcon } from "@heroicons/react/solid";
 
 export default function Header() {
   return (
-    <div className="flex items-center justify-between max-w-6xl">
+    <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
       <div className="h-24 w-24 relative hidden lg:inline-grid">
         <Image
           src={instagram}
@@ -31,7 +33,17 @@ export default function Header() {
           placeholder="Search"
         />
       </div>
-      <div className="">Rightside</div>
+      <div className="flex space-x-4 items-center">
+        <HomeIcon className="hidden md:inline-flex h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
+        <PlusCircleIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
+        <Image
+          src={nyan}
+          alt="user-image"
+          className="h-10 w-10 rounded-full object-cover"
+          width={40}
+          height={40}
+        />
+      </div>
     </div>
   );
 }
