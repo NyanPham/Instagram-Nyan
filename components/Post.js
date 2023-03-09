@@ -8,7 +8,6 @@ import {
 } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   addDoc,
@@ -23,13 +22,15 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Moment from "react-moment";
+import userState from "../atoms/userAtom";
+import { useRecoilState } from "recoil";
 
 export default function Post({ id, username, userImg, img, caption }) {
-  const { data: session } = useSession();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const [likes, setLikes] = useState([]);
+  const [currentUser] = useRecoilState(userState);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -57,17 +58,17 @@ export default function Post({ id, username, userImg, img, caption }) {
   }, [id]);
 
   useEffect(() => {
-    if (session == null) return;
+    if (currentUser == null) return;
 
-    setHasLiked(likes.findIndex((like) => like.id === session.user.uid) !== -1);
-  }, [likes, session]);
+    setHasLiked(likes.findIndex((like) => like.id === currentUser?.uid) !== -1);
+  }, [likes, currentUser]);
 
   async function likePost() {
     if (hasLiked) {
-      await deleteDoc(doc(db, "posts", id, "likes", session.user.uid));
+      await deleteDoc(doc(db, "posts", id, "likes", currentUser?.uid));
     } else {
-      await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
-        username: session.user.username,
+      await setDoc(doc(db, "posts", id, "likes", currentUser?.uid), {
+        username: currentUser?.username,
       });
     }
   }
@@ -81,8 +82,8 @@ export default function Post({ id, username, userImg, img, caption }) {
     try {
       await addDoc(collection(db, "posts", id, "comments"), {
         comment: commentToSend,
-        username: session.user.username,
-        userImage: session.user.image,
+        username: currentUser?.username,
+        userImage: currentUser?.image,
         timestamp: serverTimestamp(),
       });
     } catch (err) {
@@ -118,7 +119,7 @@ export default function Post({ id, username, userImg, img, caption }) {
       </div>
 
       {/* Buttons */}
-      {session && (
+      {currentUser && (
         <div className="flex justify-between px-4 pt-4">
           <div className="flex space-x-4">
             {hasLiked ? (
@@ -138,6 +139,9 @@ export default function Post({ id, username, userImg, img, caption }) {
       {/* Comments */}
 
       <p className="p-5 truncate">
+        {likes.length > 0 && (
+          <p className="font-bold mb-1">{likes.length} likes</p>
+        )}
         <span className="font-bold mr-2">{username}</span>
         {caption}
       </p>
@@ -162,7 +166,7 @@ export default function Post({ id, username, userImg, img, caption }) {
       )}
 
       {/* Post Input box */}
-      {session && (
+      {currentUser && (
         <form className="flex items-center p-4">
           <EmojiHappyIcon className="h-7" />
           <input

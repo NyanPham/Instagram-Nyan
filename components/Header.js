@@ -2,15 +2,47 @@ import Image from "next/image";
 import instagram from "../public/instagram.png";
 import { SearchIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import { HomeIcon } from "@heroicons/react/solid";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { useRecoilState } from "recoil";
 import modalState from "../atoms/modalAtom";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import userState from "../atoms/userAtom";
 
 export default function Header() {
-  const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
+
   const router = useRouter();
+  const auth = getAuth();
+  console.log(currentUser);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const fetchUser = async () => {
+          const docRef = doc(
+            db,
+            "users",
+            user.auth.currentUser.providerData[0].uid
+          );
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setCurrentUser(docSnap.data());
+          }
+        };
+
+        fetchUser();
+      }
+    });
+  }, []);
+
+  function onSignOut() {
+    signOut(auth);
+    setCurrentUser(null);
+  }
 
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-30">
@@ -47,7 +79,7 @@ export default function Header() {
             className="hidden md:inline-flex h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
             onClick={() => router.push("/")}
           />
-          {session ? (
+          {currentUser ? (
             <>
               <PlusCircleIcon
                 className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
@@ -55,16 +87,16 @@ export default function Header() {
               />
               <div className="h-10 w-10 rounded-full object-cover inline-flex cursor-pointer relative">
                 <Image
-                  src={session.user.image}
-                  alt={session.user.name}
+                  src={currentUser.userImg}
+                  alt={currentUser.username}
                   layout="fill"
-                  onClick={signOut}
+                  onClick={onSignOut}
                   className="rounded-full object-cover"
                 />
               </div>
             </>
           ) : (
-            <button onClick={signIn}>Sign in</button>
+            <button onClick={() => router.push("/auth/signin")}>Sign in</button>
           )}
         </div>
       </div>

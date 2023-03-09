@@ -2,11 +2,12 @@ import minifaker from "minifaker";
 import "minifaker/locales/en";
 import { useEffect, useState } from "react";
 import Story from "./Story";
-import { useSession } from "next-auth/react";
+import { useRecoilState } from "recoil";
+import userState from "../atoms/userAtom";
 
 export default function Stories() {
   const [storyUsers, setStoryUsers] = useState([]);
-  const { data: session } = useSession();
+  const [currentUser] = useRecoilState(userState);
 
   useEffect(() => {
     const storyUsers = minifaker.array(20, (i) => ({
@@ -21,10 +22,10 @@ export default function Stories() {
   console.log(storyUsers);
   return (
     <div className="flex space-x-2 p-6 bg-white mt-8 border-gray-200 border overflow-x-auto rounded-sm scrollbar-none">
-      {session && (
+      {currentUser && (
         <Story
-          img={session.user.image}
-          username={session.user.username}
+          img={currentUser.userImg}
+          username={currentUser.userName}
           isUser={true}
         />
       )}

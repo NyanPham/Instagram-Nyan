@@ -1,5 +1,6 @@
 import { useRecoilState } from "recoil";
 import modalState from "../atoms/modalAtom";
+import userState from "../atoms/userAtom";
 import Modal from "react-modal";
 import { CameraIcon } from "@heroicons/react/outline";
 import { useRef, useState } from "react";
@@ -11,15 +12,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db, storage } from "../firebase";
-import { useSession } from "next-auth/react";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import Image from "next/image";
 
 export default function UploadModal() {
   const [open, setOpen] = useRecoilState(modalState);
+  const [currentUser] = useRecoilState(userState);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
 
   const fileInputRef = useRef(null);
   const captionInputRef = useRef(null);
@@ -42,8 +42,8 @@ export default function UploadModal() {
     try {
       const docRef = await addDoc(collection(db, "posts"), {
         caption: captionInputRef.current.value,
-        username: session.user.username,
-        profileImg: session.user.image,
+        username: currentUser.username,
+        profileImg: currentUser.userImg,
         timestamp: serverTimestamp(),
       });
 
