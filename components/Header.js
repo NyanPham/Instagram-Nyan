@@ -1,10 +1,15 @@
 import Image from "next/image";
 import instagram from "../public/instagram.png";
-import nyan from "../public/nyan-image.png";
 import { SearchIcon, PlusCircleIcon } from "@heroicons/react/outline";
 import { HomeIcon } from "@heroicons/react/solid";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useRecoilState } from "recoil";
+import modalState from "../atoms/modalAtom";
 
 export default function Header() {
+  const { data: session } = useSession();
+  const [open, setOpen] = useRecoilState(modalState);
+
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-30">
       <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
@@ -36,14 +41,24 @@ export default function Header() {
         </div>
         <div className="flex space-x-4 items-center">
           <HomeIcon className="hidden md:inline-flex h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
-          <PlusCircleIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
-          <Image
-            src={nyan}
-            alt="user-image"
-            className="h-10 w-10 rounded-full object-cover"
-            width={40}
-            height={40}
-          />
+          {session ? (
+            <>
+              <PlusCircleIcon
+                className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
+                onClick={() => setOpen(true)}
+              />
+              <Image
+                src={session.user.image}
+                alt={session.user.name}
+                className="h-10 w-10 rounded-full object-cover inline-flex cursor-pointer"
+                width={40}
+                height={40}
+                onClick={signOut}
+              />
+            </>
+          ) : (
+            <button onClick={signIn}>Sign in</button>
+          )}
         </div>
       </div>
     </div>
