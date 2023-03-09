@@ -17,8 +17,6 @@ export default function Posts() {
     () => unscrubscribe;
   }, []);
 
-  console.log(posts.map((post) => post.data()));
-
   return (
     <div>
       {posts.map((post) => (
