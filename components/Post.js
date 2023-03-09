@@ -11,18 +11,29 @@ export default function Post({ id, username, userImg, img, caption }) {
   return (
     <div className="bg-white my-7 border rounded-md">
       <div className="flex items-center p-5">
-        <Image
-          src={userImg}
-          alt={username}
-          width={48}
-          height={48}
-          className="w-12 rounded-full object-cover border p-1 mr-3"
-        />
+        {userImg && (
+          <Image
+            src={userImg}
+            alt={username}
+            width={48}
+            height={48}
+            className="w-12 rounded-full object-cover border p-1 mr-3"
+          />
+        )}
+
         <p className="font-bold flex-1">{username}</p>
         <DotsHorizontalIcon className="h-5 " />
       </div>
-
-      <img src={img} alt={caption} className="object-cover w-full" />
+      <div className="w-full h-96 relative">
+        {img && (
+          <Image
+            src={img}
+            alt={caption}
+            layout="fill"
+            className="object-contain w-full"
+          />
+        )}
+      </div>
 
       {/* Buttons */}
       <div className="flex justify-between px-4 pt-4">

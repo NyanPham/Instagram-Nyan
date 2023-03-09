@@ -1,24 +1,23 @@
-import React from "react";
-import nyan from "../public/nyan-image.png";
+import { db } from "../firebase";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import Post from "./Post";
 
 export default function Posts() {
-  const posts = [
-    {
-      id: "1",
-      username: "codewithnyan",
-      userImg: nyan,
-      img: "https://images.unsplash.com/photo-1678260748335-542c56c4246a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=871&q=80",
-      caption: "Nice picture",
-    },
-    {
-      id: "2",
-      username: "nyanphamdev",
-      userImg: nyan,
-      img: "https://images.unsplash.com/photo-1678210111200-73c4675ac986?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80",
-      caption: "Picture of my ocean",
-    },
-  ];
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const unscrubscribe = onSnapshot(
+      query(collection(db, "posts"), orderBy("timestamp", "desc")),
+      (snapshot) => {
+        setPosts(snapshot.docs);
+      }
+    );
+
+    () => unscrubscribe;
+  }, []);
+
+  console.log(posts.map((post) => post.data()));
 
   return (
     <div>
@@ -26,10 +25,10 @@ export default function Posts() {
         <Post
           key={post.id}
           id={post.id}
-          username={post.username}
-          userImg={post.userImg}
-          img={post.img}
-          caption={post.caption}
+          username={post.data().username}
+          userImg={post.data().profileImg}
+          img={post.data().image}
+          caption={post.data().caption}
         />
       ))}
     </div>
