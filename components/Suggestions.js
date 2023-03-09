@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import minifaker, { username } from "minifaker";
+import Image from "next/image";
 
 export default function Suggestions() {
   const [suggestions, setSuggestions] = useState([]);
@@ -26,13 +27,17 @@ export default function Suggestions() {
             className="flex items-center justify-between mt-3"
             key={suggestion.id}
           >
-            <img
-              src={`https://i.pravatar.cc/150?img=${Math.ceil(
-                Math.random() * 70
-              )}`}
-              alt={suggestion.username}
-              className="h-10 rounded-full border p-[2px]"
-            />
+            <div className="relative h-10 w-10 rounded-full border p-[2px]">
+              <Image
+                src={`https://i.pravatar.cc/150?img=${Math.ceil(
+                  Math.random() * 70
+                )}`}
+                alt={suggestion.username}
+                className="rounded-full border p-[2px]"
+                layout="fill"
+              />
+            </div>
+
             <div className="flex-1 ml-4">
               <h2 className="font-semibold text-sm">{suggestion.username}</h2>
               <h3 className="text-sm text-gray-400 truncate w-[230px]">

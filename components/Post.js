@@ -57,8 +57,10 @@ export default function Post({ id, username, userImg, img, caption }) {
   }, [id]);
 
   useEffect(() => {
+    if (session == null) return;
+
     setHasLiked(likes.findIndex((like) => like.id === session.user.uid) !== -1);
-  }, [likes]);
+  }, [likes, session]);
 
   async function likePost() {
     if (hasLiked) {
@@ -90,14 +92,14 @@ export default function Post({ id, username, userImg, img, caption }) {
 
   return (
     <div className="bg-white my-7 border rounded-md">
-      <div className="flex items-center p-5">
+      <div className="flex items-center p-5 space-x-3">
         {userImg && (
           <Image
             src={userImg}
             alt={username}
             width={48}
             height={48}
-            className="w-12 rounded-full object-cover border p-1 mr-3"
+            className="rounded-full object-cover border p-1"
           />
         )}
 

@@ -13,6 +13,7 @@ import {
 import { db, storage } from "../firebase";
 import { useSession } from "next-auth/react";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import Image from "next/image";
 
 export default function UploadModal() {
   const [open, setOpen] = useRecoilState(modalState);
@@ -65,7 +66,7 @@ export default function UploadModal() {
     <div>
       {open && (
         <Modal
-          className="max-w-lg w-[90%] p-6 absolute top-56 left-1/2 -translate-x-1/2 bg-white border-2 rounded-md shadow-md"
+          className="max-w-lg w-[90%] p-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border-2 rounded-md shadow-md"
           isOpen={open}
           onRequestClose={() => {
             setSelectedFile(null);
@@ -74,12 +75,15 @@ export default function UploadModal() {
         >
           <div className="flex flex-col justify-center items-center h-full">
             {selectedFile ? (
-              <img
-                src={selectedFile}
-                alt="selected image"
-                className="w-full max-h-64 object-cover cursor-pointer"
-                onClick={() => setSelectedFile(null)}
-              />
+              <div className="w-full h-64 cursor-pointer relative">
+                <Image
+                  src={selectedFile}
+                  alt="selected image"
+                  className="object-contain"
+                  onClick={() => setSelectedFile(null)}
+                  layout="fill"
+                />
+              </div>
             ) : (
               <CameraIcon
                 onClick={() => fileInputRef.current.click()}

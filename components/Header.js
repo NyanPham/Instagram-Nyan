@@ -53,14 +53,15 @@ export default function Header() {
                 className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
                 onClick={() => setOpen(true)}
               />
-              <Image
-                src={session.user.image}
-                alt={session.user.name}
-                className="h-10 w-10 rounded-full object-cover inline-flex cursor-pointer"
-                width={40}
-                height={40}
-                onClick={signOut}
-              />
+              <div className="h-10 w-10 rounded-full object-cover inline-flex cursor-pointer relative">
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name}
+                  layout="fill"
+                  onClick={signOut}
+                  className="rounded-full object-cover"
+                />
+              </div>
             </>
           ) : (
             <button onClick={signIn}>Sign in</button>
